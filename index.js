@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 const { get } = require('mongoose');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 // app.use(bodyParser.json());
 // Apply CORS policy
 app.use(express.json()); 
@@ -15,6 +15,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cors())
 
+
+app.get('/', (req,res)=>{
+    res.send("Welcome to the API!")
+})
 app.get('/api/get/scores', (req,res) => {
     console.log("route pinged")
     get_score(req.query.uuid).then((arr)=>{
