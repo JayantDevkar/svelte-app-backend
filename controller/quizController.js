@@ -93,7 +93,7 @@ const get_quiz = (details)=>{
         Question.aggregate([
             { $match: {"$and" : [{level: {$in : lvl}}]} },
             { $sample: { size: Number(details.number)} },
-          ]).then(async (questionsArr) => {
+          ]).project({answers: -1}).then(async (questionsArr) => {
             var mssgs = questionsArr.map((val)=> attempt.questions.push(val._id))
             let ok = await Promise.all(mssgs);
             attempt.save().then((atmp)=>{
@@ -130,7 +130,7 @@ const get_user= (uuid)=> {
 
 const get_leader_board = ()=>{
     return new Promise((resolve,reject)=>{
-        Attempt.find({}).sort({score : -1, time: -1}).limit(10).then(async(arr)=>{
+        Attempt.find({isSubmitted:true}).sort({score : -1, time: -1}).limit(10).then(async(arr)=>{
             var users = arr.map(async(x)=>{
                 let usr = await get_user(x.userId)
                 var item = {
