@@ -1,15 +1,10 @@
-
 const express = require('express');
 const cors = require('cors');
 const { create_user, get_quiz, submit_quiz, get_score, get_leader_board } = require('./controller/quizController');
-const User = require('./schemas/user');
-const bodyParser = require("body-parser");
-const { get } = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-// app.use(bodyParser.json());
-// Apply CORS policy
+
 app.use(express.json()); 
 // for parsing application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true })); 
@@ -30,9 +25,12 @@ app.use((req, res, next) => {
     next()
   })
 
+  //base route
 app.get('/', (req,res)=>{
     res.send("Welcome to the API!")
 })
+//route to get scores of a player
+//INPUTS --  (uuid) : string 
 app.get('/api/get/scores', (req,res) => {
     console.log("route pinged")
     get_score(req.query.uuid).then((arr)=>{
@@ -47,8 +45,10 @@ app.get('/api/get/scores', (req,res) => {
     })
 })
 
+//route to create a user
+//INPUTS -- { (uuid) : string 
+//           (name) : string}
 app.get('/api/set/user', (req, res) => {
-    // console.log(req)
     create_user(req.query).then((usr)=>{
         if(usr){
             res.send(usr)
@@ -59,11 +59,13 @@ app.get('/api/set/user', (req, res) => {
 });
 
 
+//route to get questions
+// INPUTS -- {number: no.of questions
+//            userId: string, 
+//            level: number}
 app.get('/api/get/questions', (req, res) => {
-    // console.log(req)
     get_quiz(req.query).then((quiz)=>{
         if(quiz){
-            console.log("Sending quiz",quiz)
             res.send(JSON.stringify(quiz))
         }else{
             res.status(400).send(`There is an error in the server while getting questions`);
@@ -71,6 +73,8 @@ app.get('/api/get/questions', (req, res) => {
     })
 });
 
+//route to submit the quiz
+// INPUT : attempt object
 app.get("/api/submit/quiz", (req,res)=>{
     submit_quiz(JSON.parse(req.query.answer)).then((attempt)=>{
         // console.log("THE LAST FEED",attempt)
@@ -83,6 +87,7 @@ app.get("/api/submit/quiz", (req,res)=>{
     })
 })
 
+//route to get leader board
 app.get("/api/get/leader/board", (req,res)=> {
         get_leader_board().then((arr)=>{
             console.log("sending",arr)
@@ -92,5 +97,4 @@ app.get("/api/get/leader/board", (req,res)=> {
         })
 })
 
-// Assign the PORT to our app
 app.listen(PORT, () => console.log(`Server Running on port: http://localhost:${PORT}`));

@@ -1,8 +1,9 @@
-const { urlencoded } = require("express");
 const Attempt = require("../schemas/attempt");
 const Question = require("../schemas/question");
 const User = require("../schemas/user");
 
+
+//user => user to be created
 const create_user = (user)=>{
     return new Promise((resolve,reject)=>{
         console.log("user in func",user)
@@ -24,11 +25,9 @@ const create_user = (user)=>{
     })
 }
 
-// const obj = id_list.map((y) => {
-//     return ObjectID(y);
-//   });
-//   let obj_arr = await obj;
 
+//qId = questionId
+//ansMun = answer selected
 const check_question = (qId, ansNum)=>{
     return new Promise((resolve,reject)=>{
         console.log("INput for check",qId, ansNum )
@@ -48,6 +47,9 @@ const check_question = (qId, ansNum)=>{
         })
     })
 }
+
+//q_arr = questions that are answered
+//ansObj = answers to the question
 const evaluate_quiz = (q_arr,ansObj)=>{
     return new Promise(async(resolve,reject)=>{
         console.log("INput for eval",q_arr ,ansObj)
@@ -66,6 +68,7 @@ const evaluate_quiz = (q_arr,ansObj)=>{
     })
 }
 
+//ansObj => answers to the quiz
 const submit_quiz = (ansObj)=> {
     return new Promise((resolve,reject)=>{
         Attempt.findById(ansObj.attemptId).then(async(attempt)=>{
@@ -83,11 +86,11 @@ const submit_quiz = (ansObj)=> {
     })
 }
 
+//details = about the quiz type and number of questions
 const get_quiz = (details)=>{
     return new Promise((resolve,reject)=>{
         const attempt = new Attempt()
         attempt.userId = details.uuid
-        // Question.find({level : {$in : details.level}})
         let lvl = details.level.includes(2) ? [1,3] : [Number(details.level)]
         console.log("level == ",details, lvl)
         Question.aggregate([
@@ -98,7 +101,6 @@ const get_quiz = (details)=>{
             let ok = await Promise.all(mssgs);
             attempt.save().then((atmp)=>{
                 const q = {attemptId:atmp._id, quiz: questionsArr}
-                console.log("Sending quiz",q)
                 resolve(q)
             }          
             ).catch((e)=>{
@@ -109,6 +111,7 @@ const get_quiz = (details)=>{
     })
 }
 
+//uuid => uuid for user
 const get_score= (uuid)=>{
     return new Promise((resolve,reject)=>{
     Attempt.find({userId:uuid, isSubmitted:true}).sort({time:-1}).then((arr)=>{
@@ -120,6 +123,7 @@ const get_score= (uuid)=>{
     })
 })
 }
+//uuid => of user
 const get_user= (uuid)=> {
     return new Promise(async(resolve,reject)=>{
     User.findOne({uuid:uuid}).then((usr)=>{
@@ -127,6 +131,7 @@ const get_user= (uuid)=> {
     })
 })
 }
+
 
 const get_leader_board = ()=>{
     return new Promise((resolve,reject)=>{
