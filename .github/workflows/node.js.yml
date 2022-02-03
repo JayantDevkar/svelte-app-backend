@@ -18,7 +18,9 @@ jobs:
       matrix:
         node-version: [12.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    env:
+      MONGO_URL: "mongodb+srv://jay:JXT0e3yGz9HqHDZH@cluster0.m4k6h.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+      
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
