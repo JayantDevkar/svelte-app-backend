@@ -15,7 +15,6 @@ const create_user = (user) => {
         usr
           .save()
           .then((u) => {
-            console.log("Resolving", u);
             resolve(u);
           })
           .catch((e) => {
@@ -31,7 +30,6 @@ const create_user = (user) => {
 //ansMun = answer selected
 const check_question = (qId, ansNum) => {
   return new Promise((resolve, reject) => {
-    console.log("INput for check", qId, ansNum);
     Question.findById(qId).then((question) => {
       var feed = {};
       if (question.answers.includes(ansNum)) {
@@ -63,7 +61,6 @@ const evaluate_quiz = (q_arr, ansObj) => {
       return feed;
     });
     let waiter = await Promise.all(looper);
-    console.log("Returning form evaluate_quiz", waiter);
     let resp = { arr: waiter, score: score };
     resolve(resp);
   });
@@ -73,9 +70,7 @@ const evaluate_quiz = (q_arr, ansObj) => {
 const submit_quiz = (ansObj) => {
   return new Promise((resolve, reject) => {
     Attempt.findById(ansObj.attemptId).then(async (attempt) => {
-      console.log("SUBMIT OBJ = ", ansObj);
       const ok = await evaluate_quiz(attempt.questions, ansObj);
-      console.log("Outside submit quiz", ok);
       attempt.isSubmitted = true;
       attempt.feedBack = ok.arr;
       attempt.score = ok.score;
@@ -150,12 +145,9 @@ const get_leader_board = () => {
             score: x.score,
             date: new Date(x.time).toLocaleDateString("en-GB"),
           };
-          console.log("itemn", item);
           return item;
         });
         let waiter = await Promise.all(users);
-        console.log("okokok", waiter);
-
         resolve(waiter);
       });
   });

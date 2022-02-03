@@ -83,12 +83,12 @@ app.get("/api/get/questions", (req, res) => {
 // INPUT : attempt object
 app.get("/api/submit/quiz", (req, res) => {
   submit_quiz(JSON.parse(req.query.answer)).then((attempt) => {
-    // console.log("THE LAST FEED",attempt)
     if (attempt) {
       res.send(JSON.stringify(attempt));
     } else {
-      // res.status(400).send(`There is an error in the server while submmiting quiz`);
-      res.send(false);
+      res
+        .status(400)
+        .send(`There is an error in the server while submmiting quiz`);
     }
   });
 });
@@ -97,7 +97,6 @@ app.get("/api/submit/quiz", (req, res) => {
 app.get("/api/get/leader/board", (req, res) => {
   get_leader_board()
     .then((arr) => {
-      console.log("sending", arr);
       res.send(arr);
     })
     .catch((e) => {
@@ -111,10 +110,8 @@ app.listen(PORT, () =>
 
 app.on("error", function (err) {
   if (err.code === "EADDRINUSE") {
-    // port is currently in use
     console.log("port already in use");
     app.close();
-    // process.exit()
   }
 });
 module.exports = app;
