@@ -32,14 +32,21 @@ const check_question = (qId, ansNum) => {
   return new Promise((resolve, reject) => {
     Question.findById(qId).then((question) => {
       var feed = {};
-      if (question.answers.includes(ansNum)) {
-        feed["isCorrect"] = true;
-        feed["asked"] = question.ask;
-        feed["answered"] = question.options[ansNum];
+      if (ansNum.length > 0) {
+        if (question.answers.includes(ansNum)) {
+          feed["isCorrect"] = true;
+          feed["asked"] = question.ask;
+          feed["answered"] = question.options[ansNum];
+        } else {
+          feed["isCorrect"] = false;
+          feed["asked"] = question.ask;
+          feed["answered"] = question.options[ansNum];
+          feed["correct"] = question.options[question.answers[0]];
+        }
       } else {
         feed["isCorrect"] = false;
         feed["asked"] = question.ask;
-        feed["answered"] = question.options[ansNum];
+        feed["answered"] = "You didn't choose an option";
         feed["correct"] = question.options[question.answers[0]];
       }
       resolve(feed);
@@ -51,7 +58,6 @@ const check_question = (qId, ansNum) => {
 //ansObj = answers to the question
 const evaluate_quiz = (q_arr, ansObj) => {
   return new Promise(async (resolve, reject) => {
-    console.log("INput for eval", q_arr, ansObj);
     var score = 0;
     const looper = q_arr.map(async (questionId) => {
       let feed = await check_question(questionId, ansObj[questionId]);
