@@ -32,14 +32,21 @@ const check_question = (qId, ansNum) => {
   return new Promise((resolve, reject) => {
     Question.findById(qId).then((question) => {
       var feed = {};
-      if (question.answers.includes(ansNum)) {
-        feed["isCorrect"] = true;
-        feed["asked"] = question.ask;
-        feed["answered"] = question.options[ansNum];
+      if (typeof ansNum == "number") {
+        if (question.answers.includes(ansNum)) {
+          feed["isCorrect"] = true;
+          feed["asked"] = question.ask;
+          feed["answered"] = question.options[ansNum];
+        } else {
+          feed["isCorrect"] = false;
+          feed["asked"] = question.ask;
+          feed["answered"] = question.options[ansNum];
+          feed["correct"] = question.options[question.answers[0]];
+        }
       } else {
         feed["isCorrect"] = false;
         feed["asked"] = question.ask;
-        feed["answered"] = question.options[ansNum];
+        feed["answered"] = "You didn't choose an option";
         feed["correct"] = question.options[question.answers[0]];
       }
       resolve(feed);
